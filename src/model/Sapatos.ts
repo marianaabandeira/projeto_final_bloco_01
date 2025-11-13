@@ -1,25 +1,14 @@
-import { Produto } from "./Produto"
+import { Produto } from "./Produto";
 
-export class Sapato extends Produto {
-
-    private _numero: number
+export class Sapatos extends Produto {
+    public numero: number;
 
     constructor(id: number, nome: string, preco: number, numero: number) {
-        super(id, nome, preco)
-        this._numero = numero
-    }
-
-    public get numero() {
-        return this._numero
-    }
-
-    public set numero(numero: number) {
-        this._numero = numero
+        super(id, nome, preco);
+        this.numero = numero;
     }
 
     public visualizar(): void {
-        super.visualizar()
-        console.log("Número: " + this._numero)
+        console.log(`ID: ${this.id} | Nome: ${this.nome} | Preço: R$${this.preco.toFixed(2)} | Número: ${this.numero}`);
     }
-
 }

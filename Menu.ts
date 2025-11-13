@@ -1,102 +1,131 @@
-import readlinesync = require("readline-sync") // Importa a biblioteca readline-sync para entrada de dados
-import { Roupa } from './src/model/Roupa' // Importa a classe Roupa do arquivo model/Roupa.ts
-import { Sapato } from './src/model/Sapatos'// Importa a classe Sapato do arquivo model/Sapatos.ts
-import { ProdutoRepository } from './src/repository/ProdutoRepository' // Importa a classe ProdutoRepository do arquivo repository/ProdutoRepository.ts
+import readlinesync = require("readline-sync");
+import { ProdutoController } from "./src/Controller/ProdutoController";
+import { Roupa } from "./src/model/Roupa";
+import { Sapatos } from "./src/model/Sapatos";
 
-export function main() { // Função principal que executa o menu do sistema
-    const repo = new ProdutoRepository() // Cria uma instância do repositório de produtos
-    let opcao: number // Declara a variável para armazenar a opção do menu
+// Cria o Controller
+const produtoController = new ProdutoController();
+
+export function main() {
+    let opcao: number;
 
     while (true) {
-        console.log("*****************************************************")
-        console.log("                     LUMÉ STORE                      ")
-        console.log("*****************************************************")
-        console.log("            1 - Cadastrar Produto                    ")
-        console.log("            2 - Listar todos os Produtos             ")
-        console.log("            3 - Buscar Produto por ID                ")
-        console.log("            4 - Atualizar Produto                    ")
-        console.log("            5 - Remover Produto                      ")
-        console.log("            9 - Sair                                 ")
-        console.log("*****************************************************")
+        console.log("*****************************************************");
+        console.log("                                                     ");
+        console.log("                     LUMÉ STORE                      ");
+        console.log("                                                     ");
+        console.log("*****************************************************");
+        console.log("                                                     ");
+        console.log("            1 - Cadastrar Produto                    ");
+        console.log("            2 - Listar todos os Produtos             ");
+        console.log("            3 - Buscar Produto por ID                ");
+        console.log("            4 - Atualizar Produto                    ");
+        console.log("            5 - Remover Produto                      ");
+        console.log("            6 - Sair                                 ");
+        console.log("                                                     ");
+        console.log("*****************************************************");
+        console.log("                                                     ");
 
-        opcao = readlinesync.questionInt("\nEntre com a opção desejada: ") // Lê a opção do usuário
+        opcao = readlinesync.questionInt("Entre com a opção desejada: ");
 
-        if (opcao == 9) { // Se a opção for 9, exibe a mensagem de saída e encerra o programa
-            console.log("\nLumé Store - Elegância, estilo e luz em cada peça! ✨") // Mensagem temática de saída
-            sobre()
-            process.exit(0) // Encerra o programa
+        if (opcao === 6) {
+            console.log("\nLumé Store - Elegância, estilo e luz em cada peça! ✨");
+            sobre();
+            process.exit(0);
         }
 
-        switch (opcao) { // Estrutura switch para tratar as opções do menu
-            case 1: // Cadastrar Produto
-                console.log("\nCadastrar Produto\n") // Mensagem de cabeçalho
-                const tipo = readlinesync.questionInt("Tipo (1 - Roupa / 2 - Sapato): ")// Lê o tipo de produto
-                const nome = readlinesync.question("Nome: ") // Lê o nome do produto    
-                const preco = readlinesync.questionFloat("Preço: ") // Lê o preço do produto
-
-                if (tipo === 1) { // Se o tipo for 1, cadastra uma roupa
-                    const tamanho = readlinesync.question("Tamanho: ") // Lê o tamanho da roupa
-                    repo.cadastrar(new Roupa(repo.gerarId(), nome, preco, tamanho)) // Cria e cadastra a roupa no repositório
-                } else if (tipo === 2) { // Se o tipo for 2, cadastra um sapato
-                    const numero = readlinesync.questionInt("Número do sapato: ") // Lê o número do sapato
-                    repo.cadastrar(new Sapato(repo.gerarId(), nome, preco, numero)) // Cria e cadastra o sapato no repositório
-                } else { // Tipo inválido
-                    console.log("\nTipo inválido") 
-                }
-                break
-
+        switch (opcao) {
+            case 1:
+                cadastrarProdutoMenu();
+                break;
             case 2:
-                console.log("\nListando todos os produtos\n")
-                repo.listarTodos()
-                break
-
+                produtoController.listarTodos();
+                break;
             case 3:
-                const idBusca = readlinesync.questionInt("Digite o ID do produto: ")
-                const produto = repo.procurarPorId(idBusca)
-                if (produto) produto.visualizar()
-                else console.log("\nProduto não encontrado")
-                break
-
+                buscarProdutoMenu();
+                break;
             case 4:
-                const idAtualizar = readlinesync.questionInt("Digite o ID do produto que deseja atualizar: ")
-                const prod = repo.procurarPorId(idAtualizar)
-                if (prod) {
-                    const novoNome = readlinesync.question("Novo nome: ")
-                    const novoPreco = readlinesync.questionFloat("Novo preço: ")
-                    prod.nome = novoNome
-                    prod.preco = novoPreco
-                    if (prod instanceof Roupa) {
-                        const novoTamanho = readlinesync.question("Novo tamanho: ")
-                        prod.tamanho = novoTamanho
-                    } else if (prod instanceof Sapato) {
-                        const novoNumero = readlinesync.questionInt("Novo número: ")
-                        prod.numero = novoNumero
-                    }
-                    console.log("\nProduto atualizado com sucesso")
-                } else {
-                    console.log("\nProduto não encontrado")
-                }
-                break
-
+                atualizarProdutoMenu();
+                break;
             case 5:
-                const idRemover = readlinesync.questionInt("Digite o ID do produto que deseja remover: ")
-                repo.deletar(idRemover)
-                break
-
+                removerProdutoMenu();
+                break;
             default:
-                console.log("\nOpção inválida")
-                break
+                console.log("\nOpção inválida! Tente novamente.\n");
+                break;
         }
     }
-
 }
 
-export function sobre(): void {
-    console.log("\n*****************************************************")
-    console.log("Projeto Desenvolvido por: Mariana Bandeira ")
-    console.log("Mariana Bandeira - marianaabandeiira@gmail.com")
-    console.log("github.com/marianaabandeira")
-    console.log("*****************************************************")
+// --- Funções do Menu ---
+function cadastrarProdutoMenu() {
+    console.log("\n--- Cadastrar Produto ---\n");
+    const tipo = readlinesync.questionInt("Tipo (1 - Roupa / 2 - Sapato): ");
+    const nome = readlinesync.question("Nome: ");
+    const preco = readlinesync.questionFloat("Preço: ");
+
+    if (tipo === 1) {
+        const tamanho = readlinesync.question("Tamanho: ");
+        produtoController.criarRoupa(nome, preco, tamanho);
+    } else if (tipo === 2) {
+        const numero = readlinesync.questionInt("Número do sapato: ");
+        produtoController.criarSapato(nome, preco, numero);
+    } else {
+        console.log("\nTipo inválido!\n");
+    }
 }
 
-main()
+function buscarProdutoMenu() {
+    console.log("\n--- Buscar Produto por ID ---\n");
+    const id = readlinesync.questionInt("Digite o ID do produto: ");
+    const produto = produtoController.procurarPorId(id);
+
+    if (produto) {
+        produto.visualizar();
+    } else {
+        console.log("\nProduto não encontrado.\n");
+    }
+}
+
+function atualizarProdutoMenu() {
+    console.log("\n--- Atualizar Produto ---\n");
+    const id = readlinesync.questionInt("Digite o ID do produto: ");
+    const produto = produtoController.procurarPorId(id);
+
+    if (!produto) {
+        console.log("\nProduto não encontrado.\n");
+        return;
+    }
+
+    const novoNome = readlinesync.question("Novo nome: ");
+    const novoPreco = readlinesync.questionFloat("Novo preço: ");
+    produto.nome = novoNome;
+    produto.preco = novoPreco;
+
+    if (produto instanceof Roupa) {
+        const novoTamanho = readlinesync.question("Novo tamanho: ");
+        produto.tamanho = novoTamanho;
+    } else if (produto instanceof Sapatos) {
+        const novoNumero = readlinesync.questionInt("Novo número: ");
+        produto.numero = novoNumero;
+    }
+
+    produtoController.atualizar(produto);
+}
+
+function removerProdutoMenu() {
+    console.log("\n--- Remover Produto ---\n");
+    const id = readlinesync.questionInt("Digite o ID do produto: ");
+    produtoController.deletar(id);
+}
+
+// --- Função desenvolvedor ---
+function sobre(): void {
+    console.log("\n*****************************************************");
+    console.log("Projeto Desenvolvido por: Mariana Bandeira");
+    console.log("Mariana Bandeira - marianaabandeiira@gmail.com");
+    console.log("github.com/marianaabandeira");
+    console.log("*****************************************************");
+}
+
+main();
